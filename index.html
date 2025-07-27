@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>NewsGrid By GeoNerd</title>
+  <link rel="stylesheet" href="./style.css">
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NewsGrid by GeoNerd</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Internet Message -->
+  <div id="offline-message">⚠️ Please connect to the internet</div>
+
+  <!-- Splash Screen -->
+  <div id="splash-screen">
+    <div class="splash-content">
+      <img src="https://i.postimg.cc/MG6vL9vY/Gro.png" alt="Logo" class="splash-logo" />
+      <h1>📰 Welcome to<br><span>NewsGrid by GeoNerd</span></h1>
+    </div>
+  </div>
+
+  <!-- App -->
+  <div id="app" style="display: none;">
+    <header class="header">
+      <img src="https://i.postimg.cc/MG6vL9vY/Gro.png" alt="Logo" class="header-logo" />
+      <h2 class="app-title">NewsGrid by GeoNerd</h2>
+    </header>
+
+    <div class="filter-container">
+      <select id="categoryFilter">
+        <option value="all">All Categories</option>
+      </select>
+    </div>
+
+    <div id="spinner" class="spinner"></div>
+    <div id="gallery" class="masonry"></div>
+  </div>
+
+  <!-- Modal -->
+  <div id="modal" class="modal">
+    <span id="close">&times;</span>
+    <img id="modal-img" class="modal-content" />
+    <button id="prev" class="nav-btn">←</button>
+    <button id="next" class="nav-btn">→</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+<!-- partial -->
+  <script  src="./script.js"></script>
+
+</body>
+</html>
