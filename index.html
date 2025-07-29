@@ -11,30 +11,29 @@
   <!-- Splash Screen -->
   <div id="splash-screen">
     <div class="splash-content">
-      <img src="https://i.postimg.cc/MG6vL9vY/Gro.png" alt="Logo" class="splash-logo" />
+      <img src="https://i.postimg.cc/MG6vL9vY/Gro.png" alt="NewsGrid Logo" class="splash-logo">
       <h1>📰 Welcome to<br><span>NewsGrid by GeoNerd</span></h1>
     </div>
   </div>
 
-  <!-- Main App -->
-  <div id="app" style="display: none;">
-    <header class="header-bar">
-      <img src="https://i.postimg.cc/MG6vL9vY/Gro.png" alt="Logo" class="header-logo" />
-      <h2 class="app-title">NewsGrid by GeoNerd</h2>
-    </header>
+  <!-- App Header -->
+  <header class="app-header">
+    <img src="https://i.postimg.cc/MG6vL9vY/Gro.png" alt="Logo" class="header-logo">
+    <h2>NewsGrid by GeoNerd</h2>
+  </header>
 
-    <div class="controls">
-      <select id="categorySelect">
-        <option value="">All Categories</option>
-      </select>
-    </div>
-
-    <div id="gallery" class="masonry"></div>
-    <div id="spinner" class="spinner">Loading...</div>
-
-    <!-- Share Button -->
-    <button id="shareBtn" class="share-button">🔗 Share</button>
+  <!-- Category Filter -->
+  <div class="filter-bar">
+    <select id="categorySelect">
+      <option value="">All Categories</option>
+    </select>
   </div>
+
+  <!-- Spinner -->
+  <div class="spinner" id="spinner"></div>
+
+  <!-- Main Gallery -->
+  <div id="gallery" class="masonry"></div>
 
   <!-- Modal -->
   <div id="modal" class="modal">
