@@ -1,21 +1,26 @@
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
   font-family: 'Segoe UI', sans-serif;
   background: #f4f4f4;
 }
 
-#offline-message {
-  display: none;
-  background: #ffcccc;
-  text-align: center;
-  padding: 0.5rem;
-  color: #900;
-  font-weight: bold;
+.header-bar {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  padding: 0.5rem 1rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.header-logo {
+  height: 40px;
+  margin-right: 10px;
+}
+
+.app-title {
+  color: #333;
+  font-size: 1.5rem;
 }
 
 /* Splash */
@@ -31,74 +36,36 @@ body {
   animation: fadeOut 1s ease-out forwards;
   animation-delay: 2s;
 }
-@keyframes fadeOut {
-  to { opacity: 0; visibility: hidden; }
-}
 .splash-content {
   text-align: center;
   animation: fadeIn 1s ease;
 }
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
 .splash-logo {
   width: 120px;
-  height: auto;
   margin-bottom: 20px;
+  animation: fadeIn 1.5s ease-in-out;
 }
 .splash-content h1 {
-  font-size: 1.8rem;
+  font-size: 2rem;
   animation: float 2s ease-in-out infinite;
 }
+.splash-content span { color: #00bcd4; }
+
 @keyframes float {
   0%,100% { transform: translateY(0); }
   50% { transform: translateY(-10px); }
 }
-.splash-content span { color: #00bcd4; }
+@keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
 
-/* Header */
-.header {
-  background: #fff;
-  padding: 10px 20px;
-  display: flex;
-  align-items: center;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-.header-logo {
-  height: 40px;
-  margin-right: 10px;
-}
-.app-title {
-  font-size: 1.4rem;
-  color: #333;
-}
-
-/* Filter */
-.filter-container {
+/* Controls */
+.controls {
+  padding: 1rem;
   text-align: center;
-  margin: 10px;
 }
-#categoryFilter {
+.controls select {
   padding: 0.5rem;
   font-size: 1rem;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-}
-
-/* Spinner */
-.spinner {
-  border: 6px solid #f3f3f3;
-  border-top: 6px solid #00bcd4;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  animation: spin 1s linear infinite;
-  margin: 30px auto;
-}
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  border-radius: 6px;
 }
 
 /* Masonry */
@@ -135,13 +102,10 @@ body {
 }
 #modal-img {
   display: block;
-  max-width: 90vw;
-  max-height: 80vh;
-  object-fit: contain;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  margin: auto;
+  max-width: 90%;
+  max-height: 90%;
+  margin-top: 5%;
   border-radius: 8px;
 }
 #close {
@@ -158,11 +122,53 @@ body {
   transform: translateY(-50%);
   font-size: 2rem;
   color: #fff;
-  background: rgba(0,0,0,0.4);
+  background: transparent;
   border: none;
-  padding: 10px 15px;
-  border-radius: 50%;
   cursor: pointer;
 }
-#prev { left: 30px; }
+#prev { left: 30px; } 
 #next { right: 30px; }
+
+/* Spinner */
+.spinner {
+  text-align: center;
+  padding: 1rem;
+  font-weight: bold;
+  color: #666;
+}
+
+/* Share */
+.share-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #00bcd4;
+  color: white;
+  padding: 0.6rem 1rem;
+  border: none;
+  border-radius: 50px;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  z-index: 9999;
+}
+.share-button:hover {
+  background: #0097a7;
+}
+.share-tile-button {
+  display: block;
+  margin-top: 0.4rem;
+  background: #00bcd4;
+  color: white;
+  border: none;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.9rem;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+  width: 100%;
+}
+
+.share-tile-button:hover {
+  background: #0097a7;
+}
