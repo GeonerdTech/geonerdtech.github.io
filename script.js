@@ -1,116 +1,89 @@
 // Splash screen
 setTimeout(() => {
-  document.getElementById('splash-screen').style.display = 'none';
+  document.getElementById("splash-screen").style.display = "none";
+  document.getElementById("app").style.display = "block";
 }, 2000);
 
-// Google Sheet CSV (with timestamp to prevent caching)
-const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSqeus79UjHIdABYDSnbY6yUuow6rl_4BAf1GDqsOUuoZWUBZlDITJnkQ7NnXhLgeeTJNtsuxcwc8Pj/pub?gid=0&single=true&output=csv&t=" + new Date().getTime();
+const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSqeus79UjHIdABYDSnbY6yUuow6rl_4BAf1GDqsOUuoZWUBZlDITJnkQ7NnXhLgeeTJNtsuxcwc8Pj/pub?output=csv&t=" + new Date().getTime();
 
 const gallery = document.getElementById("gallery");
-const categoryFilter = document.getElementById("categoryFilter");
-const spinner = document.getElementById("spinner");
+const loader = document.getElementById("loader");
+const categorySelect = document.getElementById("categorySelect");
+let imageData = [], filteredData = [], currentIndex = 0;
 
-let imageData = [];
-let currentIndex = 0;
-
-// Fetch and parse CSV
+// Load CSV
 fetch(sheetURL)
   .then(res => res.text())
   .then(csv => {
-    const rows = csv.trim().split("\n").slice(1).reverse(); // newest first
-    const categories = new Set();
-
-    rows.forEach((row, i) => {
-      const [urlRaw, categoryRaw] = row.split(",");
-      const url = urlRaw.replace(/"/g, "").trim();
-      const category = (categoryRaw || "Uncategorized").replace(/"/g, "").trim();
-
-      if (url) {
-        imageData.push({ url, category });
-        categories.add(category);
-      }
+    const rows = csv.trim().split("\n").slice(1);
+    imageData = rows.reverse().map(row => {
+      const [image, category] = row.split(",");
+      return { image: image.replace(/"/g, "").trim(), category: category?.trim() || "Uncategorized" };
     });
-
-    // Populate filter
-    [...categories].sort().forEach(cat => {
-      const option = document.createElement("option");
-      option.value = cat;
-      option.textContent = cat;
-      categoryFilter.appendChild(option);
-    });
-
-    renderImages(imageData);
+    populateCategories();
+    renderImages("all");
   });
 
-categoryFilter.addEventListener("change", () => {
-  const selected = categoryFilter.value;
-  const filtered = selected === "all" ? imageData : imageData.filter(item => item.category === selected);
-  renderImages(filtered);
-});
-
-function renderImages(images) {
-  gallery.innerHTML = "";
-  images.forEach((item, index) => {
-    const tile = document.createElement("div");
-    tile.className = "image-tile";
-
-    const img = document.createElement("img");
-    img.src = item.url;
-    img.alt = "Image";
-    img.dataset.index = index;
-    img.onclick = () => openModal(index);
-
-    tile.appendChild(img);
-
-    if (navigator.share) {
-      const shareBtn = document.createElement("button");
-      shareBtn.className = "share-btn";
-      shareBtn.textContent = "Share";
-      shareBtn.onclick = (e) => {
-        e.stopPropagation();
-        navigator.share({
-          title: "NewsGrid by GeoNerd",
-          text: "Check this out",
-          url: `${window.location.href}?image=${index}`
-        });
-      };
-      tile.appendChild(shareBtn);
-    }
-
-    gallery.appendChild(tile);
+function populateCategories() {
+  const uniqueCategories = [...new Set(imageData.map(item => item.category))];
+  uniqueCategories.forEach(cat => {
+    const opt = document.createElement("option");
+    opt.value = cat;
+    opt.textContent = cat;
+    categorySelect.appendChild(opt);
   });
+  categorySelect.addEventListener("change", () => renderImages(categorySelect.value));
 }
 
-// Modal functionality
+function renderImages(filter) {
+  gallery.innerHTML = "";
+  filteredData = filter === "all" ? imageData : imageData.filter(item => item.category === filter);
+  filteredData.forEach((item, i) => {
+    const div = document.createElement("div");
+    div.className = "image-tile";
+    const img = document.createElement("img");
+    img.src = item.image;
+    img.alt = `Image ${i + 1}`;
+    img.setAttribute("data-index", i);
+    img.addEventListener("click", () => openModal(i));
+    const shareBtn = document.createElement("button");
+    shareBtn.textContent = "Share";
+    shareBtn.className = "share-btn";
+    shareBtn.onclick = () => navigator.share?.({
+      title: "NewsGrid Image",
+      text: "Check out this image on NewsGrid!",
+      url: `${location.href}?image=${i}`
+    }).catch(console.log);
+    div.append(img, shareBtn);
+    gallery.appendChild(div);
+  });
+  loader.style.display = "none";
+}
+
+// Modal
 const modal = document.getElementById("modal");
 const modalImg = document.getElementById("modal-img");
 const closeBtn = document.getElementById("close");
-const nextBtn = document.getElementById("next");
 const prevBtn = document.getElementById("prev");
+const nextBtn = document.getElementById("next");
 
-function openModal(index) {
-  currentIndex = index;
-  modalImg.src = imageData[index].url;
+function openModal(i) {
+  currentIndex = i;
+  modalImg.src = filteredData[i].image;
   modal.style.display = "block";
 }
-
+function closeModal() { modal.style.display = "none"; }
 function showNext() {
-  currentIndex = (currentIndex + 1) % imageData.length;
-  modalImg.src = imageData[currentIndex].url;
+  currentIndex = (currentIndex + 1) % filteredData.length;
+  modalImg.src = filteredData[currentIndex].image;
 }
-
 function showPrev() {
-  currentIndex = (currentIndex - 1 + imageData.length) % imageData.length;
-  modalImg.src = imageData[currentIndex].url;
+  currentIndex = (currentIndex - 1 + filteredData.length) % filteredData.length;
+  modalImg.src = filteredData[currentIndex].image;
 }
-
-function closeModal() {
-  modal.style.display = "none";
-}
-
+closeBtn.onclick = closeModal;
 nextBtn.onclick = showNext;
 prevBtn.onclick = showPrev;
-closeBtn.onclick = closeModal;
 modal.onclick = e => { if (e.target === modal) closeModal(); };
 document.addEventListener("keydown", e => {
   if (modal.style.display === "block") {
@@ -118,4 +91,13 @@ document.addEventListener("keydown", e => {
     if (e.key === "ArrowLeft") showPrev();
     if (e.key === "Escape") closeModal();
   }
+});
+
+// Swipe support
+let startX = 0;
+modal.addEventListener("touchstart", e => startX = e.touches[0].clientX);
+modal.addEventListener("touchend", e => {
+  const diff = e.changedTouches[0].clientX - startX;
+  if (diff > 50) showPrev();
+  if (diff < -50) showNext();
 });
