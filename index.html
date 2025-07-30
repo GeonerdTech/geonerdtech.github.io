@@ -7,33 +7,31 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-
   <!-- Splash Screen -->
   <div id="splash-screen">
     <div class="splash-content">
-      <img src="https://i.postimg.cc/MG6vL9vY/Gro.png" alt="NewsGrid Logo" class="splash-logo">
+      <img src="https://i.postimg.cc/MG6vL9vY/Gro.png" alt="NewsGrid Logo" class="splash-logo" />
       <h1>📰 Welcome to<br><span>NewsGrid by GeoNerd</span></h1>
     </div>
   </div>
 
-  <!-- App Header -->
-  <header class="app-header">
-    <img src="https://i.postimg.cc/MG6vL9vY/Gro.png" alt="Logo" class="header-logo">
-    <h2>NewsGrid by GeoNerd</h2>
+  <!-- Header -->
+  <header class="main-header">
+    <img src="https://i.postimg.cc/MG6vL9vY/Gro.png" alt="GeoNerd Logo" class="header-logo" />
+    <h1 class="app-title">NewsGrid by GeoNerd</h1>
   </header>
 
-  <!-- Category Filter -->
-  <div class="filter-bar">
-    <select id="categorySelect">
-      <option value="">All Categories</option>
+  <!-- Filter -->
+  <div class="filter-container">
+    <label for="categoryFilter">Filter by Category:</label>
+    <select id="categoryFilter">
+      <option value="all">All</option>
     </select>
   </div>
 
-  <!-- Spinner -->
-  <div class="spinner" id="spinner"></div>
-
-  <!-- Main Gallery -->
+  <!-- Main App -->
   <div id="gallery" class="masonry"></div>
+  <div class="spinner" id="spinner"></div>
 
   <!-- Modal -->
   <div id="modal" class="modal">
