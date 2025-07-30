@@ -1,129 +1,121 @@
-// Splash screen delay
+// Splash screen
 setTimeout(() => {
   document.getElementById('splash-screen').style.display = 'none';
 }, 2000);
 
-// Spinner
-const spinner = document.getElementById('spinner');
-spinner.style.display = 'block';
-
+// Google Sheet CSV (with timestamp to prevent caching)
 const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSqeus79UjHIdABYDSnbY6yUuow6rl_4BAf1GDqsOUuoZWUBZlDITJnkQ7NnXhLgeeTJNtsuxcwc8Pj/pub?gid=0&single=true&output=csv&t=" + new Date().getTime();
 
-const gallery = document.getElementById('gallery');
-const categorySelect = document.getElementById('categorySelect');
+const gallery = document.getElementById("gallery");
+const categoryFilter = document.getElementById("categoryFilter");
+const spinner = document.getElementById("spinner");
 
 let imageData = [];
 let currentIndex = 0;
 
+// Fetch and parse CSV
 fetch(sheetURL)
   .then(res => res.text())
   .then(csv => {
-    const rows = csv.trim().split('\n').slice(1);
-    const seenCategories = new Set();
+    const rows = csv.trim().split("\n").slice(1).reverse(); // newest first
+    const categories = new Set();
 
-    imageData = rows.map((row, index) => {
-      const [url, categoryRaw] = row.split(',');
-      return {
-        url: url.replace(/"/g, '').trim(),
-        category: categoryRaw?.replace(/"/g, '').trim() || 'Uncategorized'
-      };
-    }).reverse(); // newest first
+    rows.forEach((row, i) => {
+      const [urlRaw, categoryRaw] = row.split(",");
+      const url = urlRaw.replace(/"/g, "").trim();
+      const category = (categoryRaw || "Uncategorized").replace(/"/g, "").trim();
 
-    imageData.forEach(img => {
-      if (!seenCategories.has(img.category)) {
-        const opt = document.createElement('option');
-        opt.value = img.category;
-        opt.textContent = img.category;
-        categorySelect.appendChild(opt);
-        seenCategories.add(img.category);
+      if (url) {
+        imageData.push({ url, category });
+        categories.add(category);
       }
     });
 
-    renderGallery();
-    spinner.style.display = 'none';
+    // Populate filter
+    [...categories].sort().forEach(cat => {
+      const option = document.createElement("option");
+      option.value = cat;
+      option.textContent = cat;
+      categoryFilter.appendChild(option);
+    });
+
+    renderImages(imageData);
   });
 
-function renderGallery() {
-  gallery.innerHTML = '';
-  const selected = categorySelect.value;
+categoryFilter.addEventListener("change", () => {
+  const selected = categoryFilter.value;
+  const filtered = selected === "all" ? imageData : imageData.filter(item => item.category === selected);
+  renderImages(filtered);
+});
 
-  imageData.forEach((img, index) => {
-    if (!selected || img.category === selected) {
-      const div = document.createElement('div');
-      div.className = 'image-tile';
+function renderImages(images) {
+  gallery.innerHTML = "";
+  images.forEach((item, index) => {
+    const tile = document.createElement("div");
+    tile.className = "image-tile";
 
-      const image = document.createElement('img');
-      image.src = img.url;
-      image.alt = `Image ${index + 1}`;
-      image.setAttribute('data-index', index);
-      image.addEventListener('click', () => openModal(index));
+    const img = document.createElement("img");
+    img.src = item.url;
+    img.alt = "Image";
+    img.dataset.index = index;
+    img.onclick = () => openModal(index);
 
-      const shareBtn = document.createElement('button');
-      shareBtn.textContent = 'Share';
-      shareBtn.className = 'share-tile-button';
-      shareBtn.addEventListener('click', (e) => {
+    tile.appendChild(img);
+
+    if (navigator.share) {
+      const shareBtn = document.createElement("button");
+      shareBtn.className = "share-btn";
+      shareBtn.textContent = "Share";
+      shareBtn.onclick = (e) => {
         e.stopPropagation();
-        const shareUrl = `${window.location.origin + window.location.pathname}?image=${index}`;
-        if (navigator.share) {
-          navigator.share({
-            title: 'NewsGrid by GeoNerd',
-            text: 'Check out this headline!',
-            url: shareUrl
-          }).catch(err => console.error('Share failed', err));
-        } else {
-          alert('Sharing not supported on this browser.');
-        }
-      });
-
-      div.appendChild(image);
-      div.appendChild(shareBtn);
-      gallery.appendChild(div);
+        navigator.share({
+          title: "NewsGrid by GeoNerd",
+          text: "Check this out",
+          url: `${window.location.href}?image=${index}`
+        });
+      };
+      tile.appendChild(shareBtn);
     }
+
+    gallery.appendChild(tile);
   });
 }
 
-categorySelect.addEventListener('change', renderGallery);
+// Modal functionality
+const modal = document.getElementById("modal");
+const modalImg = document.getElementById("modal-img");
+const closeBtn = document.getElementById("close");
+const nextBtn = document.getElementById("next");
+const prevBtn = document.getElementById("prev");
 
-const modal = document.getElementById('modal');
-const modalImg = document.getElementById('modal-img');
-const closeBtn = document.getElementById('close');
-const prevBtn = document.getElementById('prev');
-const nextBtn = document.getElementById('next');
+function openModal(index) {
+  currentIndex = index;
+  modalImg.src = imageData[index].url;
+  modal.style.display = "block";
+}
 
-function openModal(i) {
-  currentIndex = i;
-  modalImg.src = imageData[i].url;
-  modal.style.display = 'block';
-}
-function closeModal() {
-  modal.style.display = 'none';
-}
 function showNext() {
   currentIndex = (currentIndex + 1) % imageData.length;
   modalImg.src = imageData[currentIndex].url;
 }
+
 function showPrev() {
   currentIndex = (currentIndex - 1 + imageData.length) % imageData.length;
   modalImg.src = imageData[currentIndex].url;
 }
 
-closeBtn.onclick = closeModal;
+function closeModal() {
+  modal.style.display = "none";
+}
+
 nextBtn.onclick = showNext;
 prevBtn.onclick = showPrev;
+closeBtn.onclick = closeModal;
 modal.onclick = e => { if (e.target === modal) closeModal(); };
-document.addEventListener('keydown', e => {
-  if (modal.style.display === 'block') {
-    if (e.key === 'ArrowRight') showNext();
-    if (e.key === 'ArrowLeft') showPrev();
-    if (e.key === 'Escape') closeModal();
-  }
-});
-
-// Open modal if ?image=3 in URL
-window.addEventListener('load', () => {
-  const params = new URLSearchParams(window.location.search);
-  const index = parseInt(params.get('image'), 10);
-  if (!isNaN(index) && imageData[index]) {
-    setTimeout(() => openModal(index), 2500); // after splash
+document.addEventListener("keydown", e => {
+  if (modal.style.display === "block") {
+    if (e.key === "ArrowRight") showNext();
+    if (e.key === "ArrowLeft") showPrev();
+    if (e.key === "Escape") closeModal();
   }
 });
