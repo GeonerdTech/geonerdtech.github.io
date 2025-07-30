@@ -16,22 +16,21 @@
   </div>
 
   <!-- Header -->
-  <header class="main-header">
-    <img src="https://i.postimg.cc/MG6vL9vY/Gro.png" alt="GeoNerd Logo" class="header-logo" />
-    <h1 class="app-title">NewsGrid by GeoNerd</h1>
+  <header class="header">
+    <img src="https://i.postimg.cc/MG6vL9vY/Gro.png" alt="Logo" class="logo" />
+    <h2 class="app-title">NewsGrid by GeoNerd</h2>
   </header>
 
-  <!-- Filter -->
-  <div class="filter-container">
-    <label for="categoryFilter">Filter by Category:</label>
-    <select id="categoryFilter">
-      <option value="all">All</option>
-    </select>
-  </div>
-
   <!-- Main App -->
-  <div id="gallery" class="masonry"></div>
-  <div class="spinner" id="spinner"></div>
+  <div id="app" style="display: none;">
+    <div id="category-filter">
+      <select id="categorySelect">
+        <option value="all">All Categories</option>
+      </select>
+    </div>
+    <div id="gallery" class="masonry"></div>
+    <div id="loader" class="loader">Loading...</div>
+  </div>
 
   <!-- Modal -->
   <div id="modal" class="modal">
